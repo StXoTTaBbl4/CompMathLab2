@@ -125,6 +125,9 @@
 </div>
 
 <div id="calculator" style="width: 800px; height: 600px;" class="w3-half w3-left"></div>
+<div id="table" style=" margin-bottom: 105px" class="w3-table">
+
+</div>
 <!-- <div>
   <p>
     When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are
@@ -134,7 +137,9 @@
 </div> -->
 
 <footer class="w3-bottom w3-center w3-teal">
-    <h3>All rights not reserved</h3><br>
+    <p>
+        All rights not reserved
+    </p>
     <%
         SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM yyyy");
         out.println(formatter.format(Calendar.getInstance().getTime()));

@@ -117,6 +117,8 @@ $("#submitMethodAndEquation").on('click',function (){
     }
 })
 
+
+
 $('#submitABX').on('click',function (){
     document.getElementById('aWarning').innerText = "";
     document.getElementById('bWarning').innerText = "";
@@ -162,9 +164,25 @@ $('#submitABX').on('click',function (){
 
             success: function(msg){
                 console.log(msg);
-                // dots = JSON.parse(msg);
-                // console.log(dots);
-                // saveAllDots();
+                console.log(JSON.parse(msg));
+
+                let data = JSON.parse(msg);
+
+                let table = document.querySelector('#table');
+
+                generateNames(table);
+
+                for (let subArr of data) {
+                    let tr = document.createElement('tr');
+
+                    for (let elem of subArr) {
+                        let td = document.createElement('td');
+                        td.textContent = elem;
+                        tr.appendChild(td);
+                    }
+
+                    table.appendChild(tr);
+                }
             },
             error: function(error){
                 console.log("Data receive error");
@@ -221,3 +239,38 @@ $('#epsilon').on('input',function (){
     epsilon = document.getElementById('epsilon').value;
     console.log("epsilon " + epsilon);
 });
+
+function generateNames(table) {
+    switch (selectedEquation){
+        case "1":{
+            let tr = document.createElement('tr');
+
+            let th = document.createElement('th');
+            th.textContent = "i";
+            tr.appendChild(th);
+
+            th.textContent = "i";
+            tr.appendChild(th);
+
+            th.textContent = "i";
+            tr.appendChild(th);
+
+            th.textContent = "i";
+            tr.appendChild(th);
+
+            th.textContent = "i";
+            tr.appendChild(th);
+
+        }
+        case "2":{
+
+        }
+        case "3":{
+
+        }
+        case "4":{
+
+        }
+
+    }
+}

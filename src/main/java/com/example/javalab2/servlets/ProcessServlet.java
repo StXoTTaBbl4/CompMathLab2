@@ -39,8 +39,6 @@ public class ProcessServlet extends HttpServlet {
                                                                     Double.parseDouble(request.getParameter("b")),
                                                                     Double.parseDouble(request.getParameter("epsilon")),request.getParameter("equation"));
                 answer = method.getAnswer();
-                System.out.println(Arrays.deepToString(answer));
-
                 pack = Arrays.deepToString(answer);
                 System.out.println("pack " + pack);
                 out.println(pack);
@@ -50,21 +48,27 @@ public class ProcessServlet extends HttpServlet {
                         Double.parseDouble(request.getParameter("b")),
                         Double.parseDouble(request.getParameter("epsilon")),request.getParameter("equation"));
                 answer = method.getAnswer();
-
-                System.out.println(Arrays.deepToString(answer));
-
+                pack = Arrays.deepToString(answer);
+                System.out.println("pack " + pack);
+                out.println(pack);
             }
             case "iter"->{
                 SimpleIterationMethod method = new SimpleIterationMethod(Double.parseDouble(request.getParameter("a")),
                         Double.parseDouble(request.getParameter("b")),
                         Double.parseDouble(request.getParameter("epsilon")),request.getParameter("equation"));
-                System.out.println(Arrays.deepToString(method.getAnswer()));
+                answer = method.getAnswer();
+                pack = Arrays.deepToString(answer);
+                System.out.println("pack " + pack);
+                out.println(pack);
             }
             case "newton"->{
                 NewtonMethod method = new NewtonMethod(Double.parseDouble(request.getParameter("x_0")),
                         Double.parseDouble(request.getParameter("y_0")),
                         Double.parseDouble(request.getParameter("epsilon")),request.getParameter("equation"));
-                System.out.println(Arrays.deepToString(method.getAnswer()));
+                answer = method.getAnswer();
+                pack = Arrays.deepToString(answer);
+                System.out.println("pack " + pack);
+                out.println(pack);
             }
             default -> {
                 System.out.println("Нема такого метода");

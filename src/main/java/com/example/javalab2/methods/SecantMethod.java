@@ -58,20 +58,34 @@ public class SecantMethod extends Method{
 
             System.out.println("========================");
             System.out.println("iter " + count);
+            i.add(String.valueOf(count));
             System.out.println("x_prev " + x_prev);
+            Xim.add(String.valueOf(x_prev));
             System.out.println("x " + x);
+            Xi.add(String.valueOf(x));
             System.out.println("x_next " + x_next);
+            Xip.add(String.valueOf(x_next));
             System.out.println("f(x_next) " + function.calculate(x_next));
+            FXip.add(String.valueOf(function.calculate(x_next)));
             System.out.println("|x_next - x| " + Math.abs(x_next-x));
+            absDiff.add(String.valueOf(Math.abs(x_next-x)));
 
-            if (Math.abs(x - x_prev) < epsilon)
+            if (Math.abs(x - x_prev) < epsilon){
+                table = new String[6][count];
                 break;
+            }
             x_prev = x;
             x = x_next;
             count++;
 
         }
         System.out.println("======END OF CALCULATIONS======");
+        table[0] = i.toArray(new String[count]);
+        table[1] = Xim.toArray(new String[count]);
+        table[2] = Xi.toArray(new String[count]);
+        table[3] = Xip.toArray(new String[count]);
+        table[4] = FXip.toArray(new String[count]);
+        table[5] = absDiff.toArray(new String[count]);
         return table;
     }
 

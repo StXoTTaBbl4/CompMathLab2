@@ -63,7 +63,7 @@
 
         <p>
             <input id="2" type="radio" value="2" name="equation" class="equation"/>
-            <label for="2"> Метод секущих пример</label>
+            <label for="2"> \(x^3+3*x^2+12*x+8 = 0\)</label>
         </p>
 
         <p>
@@ -73,7 +73,14 @@
 
         <p>
             <input id="4" type="radio" value="4" name="equation" class="equation"/>
-            <label for="4"> Система уравнений</label>
+            <label for="4">
+                \[
+                \begin{cases}
+                x^2+y^2=4       \\
+                y=3x^2
+                \end{cases}
+                \]
+            </label>
         </p>
     </div>
 
@@ -100,6 +107,19 @@
             <label for="epsilon">\(\varepsilon\) </label>
             <input style="width: 90px" type="number" max="0.9999" min="0.0001" id="epsilon" placeholder="0">
         </div>
+
+        <div style="display: none" id="_x_0">
+            <p id="x_0Warning" style='color: red'></p>
+            <label for="epsilon">\(x_0\) </label>
+            <input style="width: 90px" type="number" max="0.9999" min="0.0001" id="x_0" placeholder="0">
+        </div>
+
+        <div style="display: none" id="_y_0">
+            <p id="y_0Warning" style='color: red'></p>
+            <label for="epsilon">\(y_0\) </label>
+            <input style="width: 90px" type="number" max="0.9999" min="0.0001" id="y_0" placeholder="0">
+        </div>
+
         <button id="submitABX" style="margin-top: 20px">Вычислить</button>
     </div>
 </div>
@@ -123,5 +143,6 @@
 
 </body>
 <script src="JS/lib/jquery-3.6.3.min.js"></script>
+<script src="JS/methods.js"></script>
 <script src="JS/main.js" ></script>
 </html>

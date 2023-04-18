@@ -1,5 +1,7 @@
 package com.example.javalab2.functions;
 
+import com.example.javalab2.others.Deltas;
+
 public class FirstSystemOfFunctions {
 
     static double x_0 = 1;
@@ -12,11 +14,11 @@ public class FirstSystemOfFunctions {
         return 3*Math.pow(x,2) - y;
     }
 
-    public double calculateDeltaX(double y){
-        return (-1-4*y)/2;
-    }
-    public double calculateDeltaY(double x){
-        return (-1-2*x)/4;
+    public Deltas calculateDeltaXY(Deltas d, double a, double b){
+        d.x = (a - 4*b)/26;
+        d.y = b + 6*d.x;
+
+        return d;
     }
 //    public double calculateSecond_FirstDerivativeX(double x){
 //        return x;

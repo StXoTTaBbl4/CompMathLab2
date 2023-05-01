@@ -74,7 +74,7 @@ public class NewtonMethod extends Method{
             System.out.println("yi_new " + yi);
 
             absDiffX.add(String.valueOf(Math.abs(xi - x_prev)));
-            absDiffY.add(String.valueOf(Math.abs(yi - y_prev) <= epsilon));
+            absDiffY.add(String.valueOf(Math.abs(yi - y_prev)));
 
             if((Math.abs(xi - x_prev) <= epsilon) || (Math.abs(yi - y_prev) <= epsilon)){
                 table = new String[7][count];

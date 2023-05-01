@@ -4,9 +4,6 @@ import com.example.javalab2.others.Deltas;
 
 public class FirstSystemOfFunctions {
 
-    static double x_0 = 1;
-    static double y_0 = 2;
-
     public double calculateFirst(double x, double y){
         return 4 - Math.pow(x,2) - Math.pow(y,2);
     }

@@ -20,7 +20,6 @@ $(document).ready(function(){
         pointStyle: "POINT",
         hidden: false,
         secret: false,
-        // color: "#c74440",
         color: "gray",
         parametricDomain: {min: "0", max: "1"},
 
@@ -29,6 +28,22 @@ $(document).ready(function(){
       });
 
 })
+
+function insertData(data){
+    let table = document.querySelector('#table');
+
+    for (let subArr of data) {
+        let tr = document.createElement('tr');
+
+        for (let elem of subArr) {
+            let td = document.createElement('td');
+            td.textContent = elem;
+            tr.appendChild(td);
+        }
+
+        table.appendChild(tr);
+    }
+}
 
 $("#submitMethodAndEquation").on('click',function (){
     document.getElementById('methodsWarning').innerHTML = "";
@@ -144,11 +159,15 @@ $('#submitABX').on('click',function (){
             document.getElementById('epsilonWarning').innerText = "Введите точность";
             return;
         }
+        epsilon = Math.abs(epsilon);
         if ((((a <= 0 && b >= 0) || (a <= 0 && b >= 0)) && (a >= b) || ((a < 0 && b < 0) && a <= b))){
             console.log(a >= b);
             document.getElementById('initDataWarning').innerHTML = "<p style='color: red'>Левая граница не может быть больше/равна правой!</p>";
             return;
         }
+
+        a = Math.round(a*100000)/100000;
+        b = Math.round(b*100000)/100000;
 
         if (checkRange(a,b,selectedEquation) == false){
             document.getElementById('initDataWarning').innerHTML = "На данном отрезке не существует корней";
@@ -167,22 +186,14 @@ $('#submitABX').on('click',function (){
                 console.log(JSON.parse(msg));
 
                 let data = JSON.parse(msg);
+                if(selectedMethod != "half")
+                    data = transpose(data);
+                let names = getNames(selectedMethod);
 
-                let table = document.querySelector('#table');
+                insertData(names);
+                insertData(data);
 
-                generateNames(table);
 
-                for (let subArr of data) {
-                    let tr = document.createElement('tr');
-
-                    for (let elem of subArr) {
-                        let td = document.createElement('td');
-                        td.textContent = elem;
-                        tr.appendChild(td);
-                    }
-
-                    table.appendChild(tr);
-                }
             },
             error: function(error){
                 console.log("Data receive error");
@@ -201,6 +212,15 @@ $('#submitABX').on('click',function (){
             return;
         }
 
+        if (epsilon == "none" || epsilon == ""){
+            document.getElementById('epsilonWarning').innerText = "Введите точность";
+            return;
+        }
+        epsilon = Math.abs(epsilon);
+
+        x_0 = Math.round(x_0*100000)/100000;
+        y_0 = Math.round(y_0*100000)/100000;
+
         console.log("method=" + selectedMethod + "&equation="+selectedEquation + "&x_0="+ x_0 + "&y_0="+ y_0 + "&epsilon=" + epsilon);
         $.ajax({
             url: 'process-servlet',
@@ -210,6 +230,12 @@ $('#submitABX').on('click',function (){
 
             success: function(msg){
                 console.log(msg);
+                let data = JSON.parse(msg);
+                data = transpose(data);
+                let names = getNames(selectedMethod);
+
+                insertData(names);
+                insertData(data);
             },
             error: function(error){
                 console.log("Data receive error");
@@ -218,6 +244,8 @@ $('#submitABX').on('click',function (){
         })
     }
 })
+
+
 
 $('#a').on('input',function (){
     a = document.getElementById('a').value;
@@ -240,37 +268,29 @@ $('#epsilon').on('input',function (){
     console.log("epsilon " + epsilon);
 });
 
-function generateNames(table) {
-    switch (selectedEquation){
-        case "1":{
-            let tr = document.createElement('tr');
+function importPortfolioFunction( arg ) {
+    var f = document.getElementById( 'importPfForm' );
+    var fileName= f.datafile.value;
+}
 
-            let th = document.createElement('th');
-            th.textContent = "i";
-            tr.appendChild(th);
-
-            th.textContent = "i";
-            tr.appendChild(th);
-
-            th.textContent = "i";
-            tr.appendChild(th);
-
-            th.textContent = "i";
-            tr.appendChild(th);
-
-            th.textContent = "i";
-            tr.appendChild(th);
-
+function getNames(method){
+    switch (method){
+        case "half":{
+            return [["i","a","b","x","F(a)","F(b)","F(x)","\|a+b\|"]];
         }
-        case "2":{
-
+        case "sec":{
+            return [["i","x\\i-1\\","x\\i\\","x\\i+1\\","F(x\\i+1\\)","x\\i+1\\ - x\\i\\"]];
         }
-        case "3":{
-
+        case "iter":{
+            return [["i","x\\i\\","x\\i+1\\","FI(x\\i+1\\)","F(x\\i+1\\)","x\\i+1\\ - x\\i\\"]];
         }
-        case "4":{
-
+        case "newton":{
+            return [["i","x\\i-1\\","x\\i\\","x\\i+1\\","F(x\\i+1\\)","x\\i+1\\ - x\\i\\","y\\i+1\\ - y\\i\\"]];
         }
 
     }
+}
+
+function transpose(matrix) {
+    return matrix[0].map((col, c) => matrix.map((row, r) => matrix[r][c]));
 }

@@ -121,10 +121,19 @@
         </div>
 
         <button id="submitABX" style="margin-top: 20px">Вычислить</button>
+        <input type="file" id="file-selector" multiple>
+        <script>
+            const fileSelector = document.getElementById('file-selector');
+            fileSelector.addEventListener('change', (event) => {
+                const fileList = event.target.files;
+                console.log(fileList);
+            });
+        </script>
+        <button id="reset" style="margin-top: 20px" onclick="location.reload()">Сбросить</button>
     </div>
 </div>
 
-<div id="calculator" style="width: 800px; height: 600px;" class="w3-half w3-left"></div>
+<div id="calculator" style="width: 700px; height: 500px;" class="w3-half w3-left"></div>
 <div id="table" style=" margin-bottom: 105px" class="w3-table">
 
 </div>

@@ -68,18 +68,23 @@
 
         <p>
             <input id="3" type="radio" value="3" name="equation" class="equation"/>
-            <label for="3"> Метод простой итерации пример</label>
+            <label for="3">\((\frac{1}{2})^x=0\)</label>
         </p>
 
         <p>
             <input id="4" type="radio" value="4" name="equation" class="equation"/>
             <label for="4">
-                \[
+                \(
+                \begin{equation*}
                 \begin{cases}
-                x^2+y^2=4       \\
-                y=3x^2
+                x^2+y^2=4,
+                \\
+                y=3x^2,
+                \\
+                \\
                 \end{cases}
-                \]
+                \end{equation*}
+                \)
             </label>
         </p>
     </div>
@@ -120,15 +125,17 @@
             <input style="width: 90px" type="number" max="0.9999" min="0.0001" id="y_0" placeholder="0">
         </div>
 
-        <button id="submitABX" style="margin-top: 20px">Вычислить</button>
-        <input type="file" id="file-selector" multiple>
-        <script>
-            const fileSelector = document.getElementById('file-selector');
-            fileSelector.addEventListener('change', (event) => {
-                const fileList = event.target.files;
-                console.log(fileList);
-            });
-        </script>
+        <button id="submitABX" style="margin-top: 20px">Вычислить</button><br>
+        <p> ИЛИ </p>
+        <div id="loadWarning"></div>
+        <input type="file" id="input-file" ><br>
+<%--        <script>--%>
+<%--            const fileSelector = document.getElementById('file-selector');--%>
+<%--            fileSelector.addEventListener('change', (event) => {--%>
+<%--                const fileList = event.target.files;--%>
+<%--                console.log(fileList);--%>
+<%--            });--%>
+<%--        </script>--%>
         <button id="reset" style="margin-top: 20px" onclick="location.reload()">Сбросить</button>
     </div>
 </div>

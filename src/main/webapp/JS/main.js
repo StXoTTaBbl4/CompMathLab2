@@ -2,8 +2,6 @@ const elt = document.getElementById('calculator');
 const calculator = Desmos.GraphingCalculator(elt, {expressions: false, keypad: false});
 let selectedMethod = "";
 let selectedEquation = "";
-let selectedMethodName = "";
-let selectedEquationName = "";
 
 //Входные переменные
 let a = "none";
@@ -47,7 +45,6 @@ $('.equation').on('click',function(){
     for (let index = 0; index < equation.length; index++) {
         if(equation[index].checked){
             selectedEquation = equation[index].value;
-            selectedEquationName = equation[index].value;
             break;
         }
     }
@@ -65,7 +62,6 @@ $("#submitMethodAndEquation").on('click',function (){
     for (let index = 0; index < method.length; index++) {
         if(method[index].checked){
             selectedMethod = method[index].value;
-            selectedMethodName = method[index].value;
             break;
         }
     }
@@ -77,7 +73,6 @@ $("#submitMethodAndEquation").on('click',function (){
         for (let index = 0; index < equation.length; index++) {
             if (equation[index].checked) {
                 selectedEquation = equation[index].value;
-                selectedEquationName = equation[index].value;
                 break;
             }
         }
@@ -95,8 +90,8 @@ $("#submitMethodAndEquation").on('click',function (){
     }
 
     //Вывод выбранных метода/уравнения
-    document.getElementById('selected').innerHTML = "<h2>Выбранный метод: " + selectedMethodName + "</h2></br>"
-        + "<h2>Выбранное уравнение: " + selectedEquationName + "</h2>";
+    document.getElementById('selected').innerHTML = "<h2>Выбранный метод: " + getMethodName(selectedMethod) + "</h2></br>"
+        + "<h2>Выбранное уравнение: " + selectedEquation + "</h2>";
     MathJax.typeset();
     document.getElementById('selectedOptions').style.display="none";
     document.getElementById('initData').style.display="block";
@@ -118,10 +113,123 @@ $("#submitMethodAndEquation").on('click',function (){
     }
 })
 
+//Отправка данных на обработку
 $('#submitABX').on('click',function (){
     send_and_receive_data();
 })
 
+$('#a').on('input',function (){
+    a = document.getElementById('a').value;
+    console.log("a "+ a);
+});
+$('#b').on('input',function (){
+    b = document.getElementById('b').value;
+    console.log("b "+ b);
+});
+$('#x_0').on('input',function (){
+    x_0 = document.getElementById('x_0').value;
+    console.log("x_0 " + x_0);
+});
+$('#y_0').on('input',function (){
+    y_0 = document.getElementById('y_0').value;
+    console.log("y_0 " + y_0);
+});
+$('#epsilon').on('input',function (){
+    epsilon = document.getElementById('epsilon').value;
+    console.log("epsilon " + epsilon);
+});
+
+$('#input-file').on('change',function (evt){
+     getFile(evt);
+})
+//В гробах вертятся n поколенй аккуратного кода давая энергию всему городу
+$('#saveData').on('click',function (){
+
+    let csv_data = [];
+
+    let rows = document.getElementsByTagName('tr');
+    for (let i = 0; i < rows.length; i++) {
+
+        let cols = rows[i].querySelectorAll('td,th');
+
+        let csvrow = [];
+        for (let j = 0; j < cols.length; j++) {
+            csvrow.push(cols[j].innerHTML);
+        }
+
+        csv_data.push(csvrow.join(","));
+    }
+    csv_data = csv_data.join('\n');
+
+    let CSVFile = new Blob([csv_data], { type: "text/csv" });
+
+
+    let temp_link = document.createElement('a');
+
+
+    temp_link.download = "data.csv";
+    temp_link.href = window.URL.createObjectURL(CSVFile);
+
+    temp_link.style.display = "none";
+    document.body.appendChild(temp_link);
+
+    temp_link.click();
+    document.body.removeChild(temp_link);
+})
+
+
+//Чтение из файла
+function getFile(event) {
+    const input = event.target
+    if ('files' in input && input.files.length > 0) {
+        placeFileContent(input.files[0])
+    }
+}
+function placeFileContent( file) {
+    readFileContent(file).then(content => {
+        let fileContentArray = content.split(/\r\n|\n/)
+
+        if (fileContentArray.length != 3){
+            document.getElementById('loadWarning').innerText = "<p style='color: red'>Количество аргументов и строк - 3</p>";
+        }else {
+            if (!checkInput(fileContentArray)){
+                document.getElementById('loadWarning').innerText = "<p style='color: red'>Количество аргументов и строк - 3</p>";
+                return;
+            }
+            if (selectedMethod != "newton") {
+                a = fileContentArray[0];
+                b = fileContentArray[1];
+            } else {
+                x_0 = fileContentArray[0];
+                y_0 = fileContentArray[1];
+            }
+            epsilon = fileContentArray[2];
+            send_and_receive_data();
+        }
+    }).catch(error => console.log(error))
+
+}
+function readFileContent(file) {
+    const reader = new FileReader()
+    return new Promise((resolve, reject) => {
+        reader.onload = event => resolve(event.target.result)
+        reader.onerror = error => reject(error)
+        reader.readAsText(file)
+    })
+}
+function checkInput(input){
+    let buff
+    for (let i = 0; i < input.length; i++) {
+        buff = input[i];
+        if (buff.split(" ").length > 1){
+            return false
+        }
+    }
+    return true
+}
+//
+
+//валидация/отправка/получение данных
 function send_and_receive_data(){
     aWarning.innerText = "";
     bWarning.innerText = "";
@@ -176,10 +284,12 @@ function send_and_receive_data(){
                 let data = JSON.parse(msg);
                 if(selectedMethod != "half")
                     data = transpose(data);
-                let names = getNames(selectedMethod);
+                let names = getTableNames(selectedMethod);
 
                 insertData(names);
                 insertData(data);
+
+                finalizeGraph(data);
 
                 MathJax.typeset();
 
@@ -223,10 +333,15 @@ function send_and_receive_data(){
                 console.log(msg);
                 let data = JSON.parse(msg);
                 data = transpose(data);
-                let names = getNames(selectedMethod);
+                let names = getTableNames(selectedMethod);
 
                 insertData(names);
                 insertData(data);
+
+                finalizeGraph(data);
+
+                MathJax.typeset();
+
             },
             error: function(error){
                 console.log("Data receive error");
@@ -236,82 +351,8 @@ function send_and_receive_data(){
     }
 }
 
-$('#a').on('input',function (){
-    a = document.getElementById('a').value;
-    console.log("a "+ a);
-});
-$('#b').on('input',function (){
-    b = document.getElementById('b').value;
-    console.log("b "+ b);
-});
-$('#x_0').on('input',function (){
-    x_0 = document.getElementById('x_0').value;
-    console.log("x_0 " + x_0);
-});
-$('#y_0').on('input',function (){
-    y_0 = document.getElementById('y_0').value;
-    console.log("y_0 " + y_0);
-});
-$('#epsilon').on('input',function (){
-    epsilon = document.getElementById('epsilon').value;
-    console.log("epsilon " + epsilon);
-});
-$('#input-file').on('change',function (evt){
-     getFile(evt);
-})
-
-//Чтение из файла
-function getFile(event) {
-    const input = event.target
-    if ('files' in input && input.files.length > 0) {
-        placeFileContent(input.files[0])
-    }
-}
-function placeFileContent( file) {
-    readFileContent(file).then(content => {
-        let fileContentArray = content.split(/\r\n|\n/)
-
-        if (fileContentArray.length != 3){
-            document.getElementById('loadWarning').innerText = "<p style='color: red'>Количество аргументов и строк - 3</p>";
-        }else {
-            if (!checkInput(fileContentArray)){
-                document.getElementById('loadWarning').innerText = "<p style='color: red'>Количество аргументов и строк - 3</p>";
-                return;
-            }
-            if (selectedMethod != "newton") {
-                a = fileContentArray[0];
-                b = fileContentArray[1];
-            } else {
-                x_0 = fileContentArray[0];
-                y_0 = fileContentArray[1];
-            }
-            epsilon = fileContentArray[2];
-            send_and_receive_data();
-        }
-    }).catch(error => console.log(error))
-
-}
-function readFileContent(file) {
-    const reader = new FileReader()
-    return new Promise((resolve, reject) => {
-        reader.onload = event => resolve(event.target.result)
-        reader.onerror = error => reject(error)
-        reader.readAsText(file)
-    })
-}
-function checkInput(input){
-    let buff
-    for (let i = 0; i < input.length; i++) {
-        buff = input[i];
-        if (buff.split(" ").length > 1){
-            return false
-        }
-    }
-    return true
-}
-//
-
-function getNames(method){
+//Заголовочные строки для таблицы
+function getTableNames(method){
     switch (method){
         case "half":{
             return [["i","a","b","x","F(a)","F(b)","F(x)","\|a+b\|"]];
@@ -323,16 +364,31 @@ function getNames(method){
             return [["i","\\(x_i\\)","\\(x_{i+1}\\)","\\(\\Phi(x_{i+1})\\)","\\(F(x_{i+1})\\)","\\(x_{i+1} - x_i\\)"]];
         }
         case "newton":{
-            return [["i","\\(x_{i-1}\\)","\\(x_{i}\\)","\\(x_{i+1}\\)","\\(F(x_{i+1})\\)","\\(x_{i+1} - x_i\\)","\\(y_{i+1} - y_i\\)"]];
+            return [["i","\\(x_i\\)","\\(y_i\\)","\\(\\delta x\\)","\\(\\delta y\\)","\\(x_{i+1} - x_i\\)","\\(y_{i+1} - y_i\\)"]];
         }
 
     }
 }
 
+function getMethodName(raw){
+    switch (raw) {
+        case "half":
+            return "Метод половинного деления"
+        case "sec":
+            return "Метод секущих"
+        case "iter":
+            return "Метод простой итерации"
+        case "newton":
+            return "Метод Ньютона(СУ)"
+    }
+}
+
+//Транспонирование матрицы результатов работы(на стороне серва делать лень было)
 function transpose(matrix) {
     return matrix[0].map((col, c) => matrix.map((row, r) => matrix[r][c]));
 }
 
+//наполнение таблицы данными
 function insertData(data){
     let table = document.querySelector('#table');
 
@@ -341,7 +397,7 @@ function insertData(data){
 
         for (let elem of subArr) {
             let td = document.createElement('td');
-            td.textContent = elem;
+            td.textContent = (typeof elem === 'number' ? Math.round(elem*100000)/100000 : elem)
             tr.appendChild(td);
         }
 
@@ -349,6 +405,7 @@ function insertData(data){
     }
 }
 
+//Рисует графики в соответствии с выбранным примером
 function drawGraph(eq) {
     calculator.setBlank()
 
@@ -385,4 +442,76 @@ function drawGraph(eq) {
         }
     }
 
+}
+let len;
+//Финальный вид графика
+function finalizeGraph(data){
+    switch (selectedMethod) {
+        case "half":
+            drawLine('x='+data[0][1] ,"a");
+            drawBorderDot("("+data[0][1]+",0)",'a_0');
+
+            drawLine('x='+data[0][2] ,"b");
+            drawBorderDot("("+data[0][2]+",0)",'b_0');
+
+            drawLine('y='+data[0][4] ,"Fa" );
+            drawBorderDot("(0,"+data[0][4]+")",'F(a)');
+
+            drawLine('y='+data[0][5] ,"Fb");
+            drawBorderDot("(0,"+data[0][5]+")",'F(b)');
+
+            for (let i = 0; i < data[0].length-1; i++) {
+                console.log(data[i][3])
+                drawBorderDot("("+data[i][3]+",0)","x"+i)
+            }
+
+            break;
+        case "sec":
+            len = data.length -1
+            drawBorderDot("("+data[len][1]+",0)",'x_(i-1)');
+            drawBorderDot("("+data[len][2]+",0)",'x_i');
+            drawBorderDot("("+data[len][3]+",0)",'x_(i+1)');
+
+            break;
+        case "iter":
+            console.log("iter")
+            len = data.length -1
+            console.log(len)
+            for (let i = 0; i < data.length; i++) {
+                drawBorderDot("("+data[i][1]+","+data[i][2]+")",'M_'+i);
+            }
+            for (let i = 0; i < data.length; i++) {
+                drawBorderDot("("+data[i][1]+","+data[i][1]+")",'N_'+i);
+            }
+            break;
+        case "newton":
+            calculator.setExpression({
+                latex: '(0,0)',
+                pointStyle: "POINT",
+                hidden: false,
+                secret: false,
+                color: "red",
+                parametricDomain: {min: "0", max: "1"},
+
+                label: "Не забудь доделать",
+                showLabel: true
+            });
+            break;
+    }
+}
+function drawBorderDot(exp,label){
+    calculator.setExpression({
+        latex: exp,
+        pointStyle: "POINT",
+        hidden: false,
+        secret: false,
+        color: "red",
+        parametricDomain: {min: "0", max: "1"},
+
+        label: label,
+        showLabel: true
+    });
+}
+function drawLine(expression,label){
+    calculator.setExpression({latex: expression, label:label, color: "gray",lineStyle: Desmos.Styles.DASHED});
 }

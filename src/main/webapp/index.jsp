@@ -58,23 +58,23 @@
 
         <p>
             <input id="1" type="radio" value="1" checked name="equation" class="equation"/>
-            <label for="1"> \(x^3 - x + 4 = 0\)</label>
+            <label for="1">№1: \(x^3 - x + 4 = 0\)</label>
         </p>
 
         <p>
             <input id="2" type="radio" value="2" name="equation" class="equation"/>
-            <label for="2"> \(x^3+3*x^2+12*x+8 = 0\)</label>
+            <label for="2">№2: \(x^3+3*x^2+12*x+8 = 0\)</label>
         </p>
 
         <p>
             <input id="3" type="radio" value="3" name="equation" class="equation"/>
-            <label for="3">\((\frac{1}{2})^x=0\)</label>
+            <label for="3">№3: \((\frac{1}{2})^x=0\)</label>
         </p>
 
         <p>
             <input id="4" type="radio" value="4" name="equation" class="equation"/>
             <label for="4">
-                \(
+                №4: \(
                 \begin{equation*}
                 \begin{cases}
                 x^2+y^2=4,
@@ -107,12 +107,6 @@
             <input style="width: 90px" type="number" step="0.01" id="b" placeholder="1">
         </div>
 
-        <div style="display: none" id="_epsilon">
-            <p id="epsilonWarning" style='color: red'></p>
-            <label for="epsilon">\(\varepsilon\) </label>
-            <input style="width: 90px" type="number" max="0.9999" min="0.0001" id="epsilon" placeholder="0">
-        </div>
-
         <div style="display: none" id="_x_0">
             <p id="x_0Warning" style='color: red'></p>
             <label for="epsilon">\(x_0\) </label>
@@ -125,9 +119,16 @@
             <input style="width: 90px" type="number" max="0.9999" min="0.0001" id="y_0" placeholder="0">
         </div>
 
+        <div style="display: none" id="_epsilon">
+            <p id="epsilonWarning" style='color: red'></p>
+            <label for="epsilon">\(\varepsilon\) </label>
+            <input style="width: 90px" type="number" max="0.9999" min="0.0001" id="epsilon" placeholder="0">
+        </div>
+
         <button id="submitABX" style="margin-top: 20px">Вычислить</button><br>
         <p> ИЛИ </p>
         <div id="loadWarning"></div>
+        <button id="saveData">Сохранить результаты</button>
         <input type="file" id="input-file" ><br>
 <%--        <script>--%>
 <%--            const fileSelector = document.getElementById('file-selector');--%>
